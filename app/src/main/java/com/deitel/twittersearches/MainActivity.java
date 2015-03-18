@@ -25,8 +25,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.app.FragmentTransaction;
+import java.util.ArrayList;
+import java.util.Collections;
 
-public class MainActivity extends Activity
+public class MainActivity extends Activity implements FirstFragment.OnFragmentInteractionListener
 {
    // name of SharedPreferences XML file that stores the saved searches 
    private static final String SEARCHES = "searches";
@@ -66,7 +69,10 @@ public class MainActivity extends Activity
 
       // MOVE to ListFragment _ register listener that searches Twitter when user touches a tag
       //getListView().setOnItemClickListener(itemClickListener);
-      
+      FragmentTransaction ft = getFragmentManager().beginTransaction();
+      ft.add(R.id.fragment_holder, new FirstFragment());
+      ft.addToBackStack(null);
+      ft.commit();
       // MOVE to ListFragment _  set listener that allows user to delete or edit a search
       //getListView().setOnItemLongClickListener(itemLongClickListener);
    } // end method onCreate
@@ -116,6 +122,8 @@ public class MainActivity extends Activity
       SharedPreferences.Editor preferencesEditor = savedSearches.edit();
       preferencesEditor.putString(tag, query); // store current search
       preferencesEditor.apply(); // store the updated preferences
+       Collections.sort(tags, String.CASE_INSENSITIVE_ORDER);
+       adapter.notifyDataSetChanged();
       
       // if tag is new, add to and sort tags, then display updated list
       if (!tags.contains(tag))
@@ -274,6 +282,26 @@ public class MainActivity extends Activity
 
    // ADDED to set up the ListFragment
    public ArrayAdapter<String> getAdapter(){return adapter;}
+
+
+    public void sendToSecondFrag(String query) {
+        String urlString = getString(R.string.searchURL) +
+                Uri.encode(savedSearches.getString(query, ""), "UTF-8");
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_holder, SecondFragment.newInstance(urlString))
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(getFragmentManager().getBackStackEntryCount()>0){
+            getFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 } // end class MainActivity
 

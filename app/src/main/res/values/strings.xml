@@ -20,4 +20,8 @@
    <string name="confirmMessage">Are you sure you want to delete the search \"%s\"?</string>
    <string name="delete">Delete</string>
 	<string name="missingMessage">Enter both a Twitter search query and a tag</string>
+
+    <string name="item_fragment">Tag List</string>
+    <string name="web_fragment">Website</string>
+
 </resources>
